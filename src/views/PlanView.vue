@@ -46,14 +46,21 @@ function applyDuration(minutes) {
   date.value = now.toISOString().slice(0, 10)
 }
 
+// 辅助函数：判断时间区间是否有效（允许跨天，如 23:30 → 00:30）
+function isTimeRangeValid(start, end) {
+  if (!start || !end) return false
+  // 只要开始和结束时间不同即可（支持跨午夜）
+  return start !== end
+}
+
 // 表单验证
 const isValid = computed(() => {
-  return date.value && startTime.value && endTime.value && task.value.trim() && startTime.value < endTime.value
+  return date.value && startTime.value && endTime.value && task.value.trim() && isTimeRangeValid(startTime.value, endTime.value)
 })
 
 const timeError = computed(() => {
-  if (startTime.value && endTime.value && startTime.value >= endTime.value) {
-    return '开始时间必须早于结束时间'
+  if (startTime.value && endTime.value && startTime.value === endTime.value) {
+    return '开始时间不能等于结束时间'
   }
   return ''
 })
